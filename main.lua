@@ -1,1 +1,211 @@
-=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
+require "import"
+import "android.widget.*"
+import "android.view.*"
+import "android.app.*"
+import "android.graphics.*"
+import "android.view.animation.*"
+import "android.speech.tts.TextToSpeech"
+import "java.util.Locale"
+import "android.os.Handler"
+import "android.os.Looper"
+import "android.content.ClipboardManager"
+import "android.content.ClipData"
+import "android.content.Context"
+import "android.content.SharedPreferences"
+import "android.content.Intent"
+import "android.net.Uri"
+import "android.content.DialogInterface"
+import "android.view.inputmethod.InputMethodManager"
+import "java.io.File"
+import "com.androlua.Http"
+import "cjson"
+import "com.androlua.LuaDialog"
+
+-- Safe Context Initialization
+local ctx = service or activity
+if not ctx then
+    pcall(function()        
+        local ActivityThread = luajava.bindClass("android.app.ActivityThread")        
+        local currentActivity = ActivityThread.currentActivityThread().getApplication()        
+        if currentActivity then ctx = currentActivity end    
+    end)
+end
+
+-- Auto-Update Configuration Variables
+local CURRENT_VERSION = "1.0"
+local VERSION_URL = "https://raw.githubusercontent.com/syedtasawar88888-a11y/Password-Manager-Pro-by-Syed-Murtaza-Gilani/refs/heads/main/version.txt"
+local UPDATE_CODE_URL = "https://raw.githubusercontent.com/syedtasawar88888-a11y/Password-Manager-Pro-by-Syed-Murtaza-Gilani/refs/heads/main/main.lua"
+local CHANGELOG_URL = "https://raw.githubusercontent.com/syedtasawar88888-a11y/Password-Manager-Pro-by-Syed-Murtaza-Gilani/refs/heads/main/changelog.txt"
+local PLUGIN_PATH = "/storage/emulated/0/解说/Plugins/Password Manager Pro by Syed Murtaza Gilani/main.lua"
+local updateInProgress = false
+local mainHandler = Handler(Looper.getMainLooper())
+
+pcall(function()
+    Http.setConnTimeout(60000)
+    Http.setReadTimeout(60000)
+end)
+
+local function trim(s)    
+    if s == nil then return "" end    
+    return tostring(s):gsub("^%s*(.-)%s*$", "%1")
+end
+
+local function showUpdateErrorDialog(title, message)
+    mainHandler.post(Runnable({
+        run = function()            
+            local currentCtx = ctx or service or activity            
+            if currentCtx then
+                pcall(function()                    
+                    local errorDialog = LuaDialog(currentCtx)
+                    errorDialog.setTitle(title)
+                    errorDialog.setMessage(message)
+                    errorDialog.setButton("OK", function()
+                        errorDialog.dismiss()                    
+                    end)
+                    errorDialog.show()                
+                end)            
+            end        
+        end
+    }))
+end
+
+local function performUpdate(mainCode, onlineVersion)    
+    if not mainCode or trim(mainCode) == "" then
+        showUpdateErrorDialog("Update Failed", "Main plugin code is empty.")        
+        return    
+    end    
+    updateInProgress = true        
+    local function updateProcess()        
+        local success = false        
+        local tempPath = PLUGIN_PATH .. ".temp_update"        
+        local f = io.open(tempPath, "w")        
+        if f then
+            f:write(mainCode)
+            f:close()                        
+            local fileExists = io.open(PLUGIN_PATH, "r")            
+            if fileExists then
+                fileExists:close()                
+                local delSuccess = pcall(function()
+                    os.remove(PLUGIN_PATH)                
+                end)                
+                if delSuccess then                    
+                    local renameSuccess = pcall(function()
+                        os.rename(tempPath, PLUGIN_PATH)                    
+                    end)                    
+                    if renameSuccess then
+                        success = true                    
+                    end                
+                end            
+            else                
+                local renameSuccess = pcall(function()
+                    os.rename(tempPath, PLUGIN_PATH)                
+                end)                
+                if renameSuccess then
+                    success = true                    
+                end            
+            end        
+        end
+    end
+    updateProcess()
+end
+
+local function checkForUpdates(isManual)
+    if updateInProgress then return end
+    
+    local function backgroundCheck()
+        pcall(function()
+            Http.get(VERSION_URL, nil, nil, nil, function(code, versionBody)
+                if code == 200 and versionBody then
+                    local onlineVersion = trim(versionBody)
+                    if onlineVersion ~= "" and onlineVersion ~= CURRENT_VERSION then
+                        Http.get(CHANGELOG_URL, nil, nil, nil, function(cCode, changelogBody)
+                            local changelogText = (cCode == 200 and changelogBody) and changelogBody or "New update available!"
+                            Http.get(UPDATE_CODE_URL, nil, nil, nil, function(uCode, codeBody)
+                                if uCode == 200 and codeBody then
+                                    mainHandler.post(Runnable({
+                                        run = function()
+                                            local currentCtx = ctx or service or activity
+                                            if currentCtx then
+                                                pcall(function()
+                                                    local updateDlg = LuaDialog(currentCtx)
+                                                    updateDlg.setTitle("Update Available (" .. onlineVersion .. ")")
+                                                    updateDlg.setMessage("What's New:\n" .. changelogText)
+                                                    updateDlg.setButton("Update Now", function()
+                                                        updateDlg.dismiss()
+                                                        performUpdate(codeBody, onlineVersion)
+                                                    end)
+                                                    updateDlg.setButton2("Later", function()
+                                                        updateDlg.dismiss()
+                                                    end)
+                                                    updateDlg.show()
+                                                end)
+                                            end
+                                        end
+                                    }))
+                                end
+                            end)
+                        end)
+                    elseif isManual then
+                        mainHandler.post(Runnable({
+                            run = function()
+                                local currentCtx = ctx or service or activity
+                                if currentCtx then
+                                    pcall(function()
+                                        local noUpdateDlg = LuaDialog(currentCtx)
+                                        noUpdateDlg.setTitle("No Update")
+                                        noUpdateDlg.setMessage("You are already using the latest version.")
+                                        noUpdateDlg.setButton("OK", function()
+                                            noUpdateDlg.dismiss()
+                                        end)
+                                        noUpdateDlg.show()
+                                    end)
+                                end
+                            end
+                        }))
+                    end
+                end
+            end)
+        end)
+    end
+    
+    local th = Thread(Runnable({ run = backgroundCheck }))
+    th.start()
+end
+
+-- Main Plugin Execution & UI Flow
+local function main()
+    local currentCtx = ctx or service or activity
+    if not currentCtx then return end
+    
+    -- Check for updates silently on startup
+    checkForUpdates(false)
+    
+    -- Main Password Manager Menu Interface
+    pcall(function()
+        local mainDlg = LuaDialog(currentCtx)
+        mainDlg.setTitle("Password Manager Pro by Syed Murtaza Gilani")
+        
+        local options = {"View Saved Passwords", "Add New Password", "Check for Updates", "Exit"}
+        mainDlg.setItems(options, function(l, v, text)
+            if text == "Check for Updates" then
+                checkForUpdates(true)
+            elseif text == "Exit" then
+                mainDlg.dismiss()
+            else
+                -- Placeholder for other features
+                local infoDlg = LuaDialog(currentCtx)
+                infoDlg.setTitle(text)
+                infoDlg.setMessage("Feature under progress.")
+                infoDlg.setButton("OK", function() infoDlg.dismiss() end)
+                infoDlg.show()
+            end
+        end)
+        mainDlg.show()
+    end)
+end
+
+-- Run the plugin main function safely
+local status, err = pcall(main)
+if not status then
+    print("Password Manager Error: " .. tostring(err))
+end
