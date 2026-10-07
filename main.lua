@@ -32,7 +32,7 @@ if not ctx then
 end
 
 -- Version Variable (the updater reads this exact line from GitHub, do not change its format)
-local CURRENT_VERSION = "1.2"
+local CURRENT_VERSION = "1.3"
 
 -- What's new in this version (the updater reads this block from GitHub and shows it to users with older versions.
 -- Keep the format: local UPDATE_NOTES = [[ ... ]] and do not use two closing square brackets inside the text)
@@ -294,47 +294,41 @@ showUpdateDialog = function(newVer, newContent, newNotes)
     notesText = "No update details were provided for this version."
   end
 
+  -- Whole update screen is scrollable, so the description and all buttons are always reachable
   local updLayout = {
-    LinearLayout, orientation="vertical", padding="20dp", gravity="center",
-    {TextView, text="Update Available", textSize="22sp", textColor=0xFF1565C0, paddingBottom="12dp"},
-    {TextView, text="Hey! Your update has arrived. Please update the extension now.\n\nYour version: " .. CURRENT_VERSION .. "\nNew version: " .. tostring(newVer), textSize="16sp", paddingBottom="10dp"},
-    {TextView, text="What's new in this update:", textSize="16sp", textColor=0xFF2E7D32, paddingBottom="6dp"},
+    ScrollView, layout_width="fill", layout_height="wrap",
     {
-      ScrollView, layout_height="180dp", layout_width="fill",
-      { TextView, text=notesText, textSize="15sp", paddingBottom="8dp" }
-    },
-    {TextView, text="Your saved passwords will stay safe.", textSize="14sp", paddingTop="6dp", paddingBottom="10dp"},
-    {
-      Button, text="Update Now", paddingTop="8dp",
-      onClick=function()
-        local ok, err = installUpdate(newContent)
-        if ok then
-          speakText("Update installed successfully. Please close and run the extension again.")
-          Toast.makeText(ctx, "Updated to version " .. tostring(newVer) .. ". Please run the extension again.", Toast.LENGTH_LONG).show()
-          if dlgUpdate then pcall(function() dlgUpdate.dismiss() dlgUpdate = nil end) end
-          saveAllDataToStorage()
-          dismissAllDialogs()
-        else
-          speakText("Automatic update failed. Opening the download page.")
-          Toast.makeText(ctx, "Auto update failed: " .. tostring(err), Toast.LENGTH_LONG).show()
-          if dlgUpdate then pcall(function() dlgUpdate.dismiss() dlgUpdate = nil end) end
-          openUrl(REPO_URL)
+      LinearLayout, orientation="vertical", padding="20dp", gravity="center",
+      {TextView, text="Update Available", textSize="22sp", textColor=0xFF1565C0, paddingBottom="12dp"},
+      {TextView, text="Hey! Your update has arrived. Please update the extension now.\n\nYour version: " .. CURRENT_VERSION .. "\nNew version: " .. tostring(newVer), textSize="16sp", paddingBottom="10dp"},
+      {TextView, text="What's new in this update:", textSize="16sp", textColor=0xFF2E7D32, paddingBottom="6dp"},
+      {TextView, text=notesText, textSize="15sp", paddingBottom="8dp"},
+      {TextView, text="Your saved passwords will stay safe.", textSize="14sp", paddingTop="6dp", paddingBottom="10dp"},
+      {
+        Button, text="Update Now", paddingTop="8dp",
+        onClick=function()
+          local ok, err = installUpdate(newContent)
+          if ok then
+            speakText("Update installed successfully. Please close and run the extension again.")
+            Toast.makeText(ctx, "Updated to version " .. tostring(newVer) .. ". Please run the extension again.", Toast.LENGTH_LONG).show()
+            if dlgUpdate then pcall(function() dlgUpdate.dismiss() dlgUpdate = nil end) end
+            saveAllDataToStorage()
+            dismissAllDialogs()
+          else
+            speakText("Automatic update failed. Opening the download page.")
+            Toast.makeText(ctx, "Auto update failed: " .. tostring(err), Toast.LENGTH_LONG).show()
+            if dlgUpdate then pcall(function() dlgUpdate.dismiss() dlgUpdate = nil end) end
+            openUrl(REPO_URL)
+          end
         end
-      end
-    },
-    {
-      Button, text="Open GitHub Page", paddingTop="6dp",
-      onClick=function()
-        if dlgUpdate then pcall(function() dlgUpdate.dismiss() dlgUpdate = nil end) end
-        openUrl(REPO_URL)
-      end
-    },
-    {
-      Button, text="Later", paddingTop="6dp",
-      onClick=function()
-        if dlgUpdate then pcall(function() dlgUpdate.dismiss() dlgUpdate = nil end) end
-        speakText("Update postponed")
-      end
+      },
+      {
+        Button, text="Later", paddingTop="6dp",
+        onClick=function()
+          if dlgUpdate then pcall(function() dlgUpdate.dismiss() dlgUpdate = nil end) end
+          speakText("Update postponed")
+        end
+      }
     }
   }
 
