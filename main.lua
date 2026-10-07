@@ -1,4 +1,4 @@
-Require "import"
+require "import"
 import "android.widget.*"
 import "android.view.*"
 import "android.app.*"
@@ -33,6 +33,16 @@ end
 
 -- Version Variable (the updater reads this exact line from GitHub, do not change its format)
 local CURRENT_VERSION = "1.3"
+
+-- What's new in this version (the updater reads this block from GitHub and shows it to users with older versions.
+-- Keep the format: local UPDATE_NOTES = [[ ... ]] and do not use two closing square brackets inside the text)
+local UPDATE_NOTES = [[
+Version Update Highlights:
+• Fixed TTS (Text-to-Speech) announcement bugs for a smoother screen reader experience.
+• Introduced dual security lock options:
+  - Numeric PIN lock (supports numbers only).
+  - Custom Password lock (supports full QWERTY keyboard characters, letters, and symbols).
+]]
 
 -- Update Source (GitHub raw link of main.lua)
 local UPDATE_URL = "https://raw.githubusercontent.com/syedtasawar88888-a11y/Password-Manager-Pro-by-Syed-Murtaza-Gilani/refs/heads/main/main.lua"
@@ -276,13 +286,24 @@ local function installUpdate(newContent)
   return true
 end
 
-showUpdateDialog = function(newVer, newContent)
+showUpdateDialog = function(newVer, newContent, newNotes)
   if dlgUpdate then pcall(function() dlgUpdate.dismiss() dlgUpdate = nil end) end
+
+  local notesText = newNotes
+  if not notesText or notesText == "" then
+    notesText = "No update details were provided for this version."
+  end
 
   local updLayout = {
     LinearLayout, orientation="vertical", padding="20dp", gravity="center",
     {TextView, text="Update Available", textSize="22sp", textColor=0xFF1565C0, paddingBottom="12dp"},
-    {TextView, text="Hey! Your update has arrived. Please update the extension now.\n\nYour version: " .. CURRENT_VERSION .. "\nNew version: " .. tostring(newVer) .. "\n\nYour saved passwords will stay safe.", textSize="16sp", paddingBottom="14dp"},
+    {TextView, text="Hey! Your update has arrived. Please update the extension now.\n\nYour version: " .. CURRENT_VERSION .. "\nNew version: " .. tostring(newVer), textSize="16sp", paddingBottom="10dp"},
+    {TextView, text="What's new in this update:", textSize="16sp", textColor=0xFF2E7D32, paddingBottom="6dp"},
+    {
+      ScrollView, layout_height="180dp", layout_width="fill",
+      { TextView, text=notesText, textSize="15sp", paddingBottom="8dp" }
+    },
+    {TextView, text="Your saved passwords will stay safe.", textSize="14sp", paddingTop="6dp", paddingBottom="10dp"},
     {
       Button, text="Update Now", paddingTop="8dp",
       onClick=function()
@@ -324,7 +345,7 @@ showUpdateDialog = function(newVer, newContent)
     onCancel = function() dlgUpdate = nil end
   })
   dlgUpdate.show()
-  speakText("Update available. Version " .. tostring(newVer) .. " is ready. Please update the extension.")
+  speakText("Update available. Version " .. tostring(newVer) .. " is ready. " .. notesText)
 end
 
 -- manual = true when the user taps "Check for Updates" (shows result even when up to date)
@@ -340,7 +361,11 @@ checkForUpdates = function(manual)
         if code == 200 and content and content ~= "" then
           local remoteVer = content:match('local%s+CURRENT_VERSION%s*=%s*"([%d%.]+)"')
           if remoteVer and isNewerVersion(remoteVer, CURRENT_VERSION) then
-            showUpdateDialog(remoteVer, content)
+            local remoteNotes = content:match('local%s+UPDATE_NOTES%s*=%s*%[%[(.-)%]%]')
+            if remoteNotes then
+              remoteNotes = remoteNotes:gsub("^%s+", ""):gsub("%s+$", "")
+            end
+            showUpdateDialog(remoteVer, content, remoteNotes)
           elseif manual then
             speakText("You are using the latest version")
             Toast.makeText(ctx, "You are using the latest version (" .. CURRENT_VERSION .. ")", Toast.LENGTH_SHORT).show()
@@ -928,4 +953,224 @@ showMoreOptionsDialog = function()
   dismissAllDialogs()
   local optionsLayout = {
     LinearLayout, orientation="vertical", padding="16dp",
-    {TextView, text="Settings & Options", textSize="22sp", gravity="center", padding
+    {TextView, text="Settings & Options", textSize="22sp", gravity="center", paddingBottom="12dp"},
+    {
+      Button, text=(ttsEnabled and "Disable TTS Announcements" or "Enable TTS Announcements"),
+      onClick=function()
+        ttsEnabled = not ttsEnabled
+        saveAllDataToStorage()
+        speakText(ttsEnabled and "TTS Enabled" or "TTS Disabled")
+        if dlgOptions then dlgOptions.dismiss() dlgOptions = nil end
+        showMoreOptionsDialog()
+      end
+    },
+    {
+      Button, text=(appPin ~= "" and "Turn Off Security Lock" or "Set Security Lock"),
+      onClick=function()
+        if dlgOptions then dlgOptions.dismiss() dlgOptions = nil end
+        if appPin ~= "" then
+          showDisablePinDialog()
+        else
+          showLockChoiceDialog()
+        end
+      end
+    },
+    {
+      Button, text="Check for Updates",
+      onClick=function()
+        checkForUpdates(true)
+      end
+    },
+    {
+      Button, text="Delete All Stored Passwords",
+      onClick=function()
+        if #passwords == 0 then
+          Toast.makeText(ctx, "No passwords stored!", Toast.LENGTH_SHORT).show()
+          return
+        end
+        passwords = {}
+        saveAllDataToStorage()
+        speakText("All passwords cleared")
+        Toast.makeText(ctx, "All passwords cleared!", Toast.LENGTH_SHORT).show()
+        if dlgOptions then dlgOptions.dismiss() dlgOptions = nil end
+        showMainDialog()
+      end
+    },
+    {
+      Button, text="Back", onClick=function() if dlgOptions then dlgOptions.dismiss() dlgOptions = nil end showMainDialog() end
+    }
+  }
+
+  dlgOptions = Dialog(ctx)
+  dlgOptions.setContentView(loadlayout(optionsLayout))
+  setupOverlayWindow(dlgOptions)
+  dlgOptions.setOnCancelListener(DialogInterface.OnCancelListener{
+    onCancel = function() showMainDialog() end
+  })
+  dlgOptions.show()
+end
+
+-- About & Developer Hub
+showAboutAppDialog = function()
+  if dlgAboutApp then dlgAboutApp.dismiss() dlgAboutApp = nil end
+  local aboutLayout = {
+    LinearLayout, orientation="vertical", padding="16dp",
+    {TextView, text="About Password Manager Pro", textSize="20sp", gravity="center", paddingBottom="10dp"},
+    {
+      ScrollView, layout_height="220dp",
+      { TextView, text="Password Manager Pro is a highly secure, offline, and completely accessible credential organizer designed specifically with Commentary Screen Reader (CSR) users in mind.\n\nKey features include:\n• Safe local storage for your Google accounts, social media logins, and banking credentials.\n• Built-in secure password generator with customizable complexity.\n• Easy search, sorting via categories, and direct clipboard copying.\n• Seamless Text-to-Speech (TTS) integration for smooth navigation without visual strain.\n• Automatic update notification whenever a new version is released.\n\nYour privacy and digital safety are fully protected since all data is stored securely on your local device.\n\nVersion: " .. CURRENT_VERSION, textSize="14sp" }
+    },
+    { Button, text="Back", onClick=function() if dlgAboutApp then dlgAboutApp.dismiss() dlgAboutApp = nil end showAboutHubDialog() end }
+  }
+  dlgAboutApp = Dialog(ctx)
+  dlgAboutApp.setContentView(loadlayout(aboutLayout))
+  setupOverlayWindow(dlgAboutApp)
+  dlgAboutApp.setOnCancelListener(DialogInterface.OnCancelListener{
+    onCancel = function() showAboutHubDialog() end
+  })
+  dlgAboutApp.show()
+end
+
+showAboutDeveloperDialog = function()
+  if dlgDev then dlgDev.dismiss() dlgDev = nil end
+  local devLayout = {
+    LinearLayout, orientation="vertical", padding="16dp",
+    {TextView, text="About Developer", textSize="20sp", gravity="center", paddingBottom="12dp"},
+    {
+      ScrollView, layout_height="220dp",
+      { TextView, text="Syed Murtaza Gilani\n\nSyed Murtaza Gilani is a passionate and multi-talented professional working as a professional voiceover artist, voice actor, audio editor, web developer, multimedia content creator, and sports host & commentator for cricket events.\n\nDedicated to empowering the blind and visually impaired community through assistive technology, he has developed various custom Lua utilities, screen reader accessible extensions, and websites like G-Show Help to make digital experiences seamless and inclusive.", textSize="15sp" }
+    },
+    { Button, text="Back", onClick=function() if dlgDev then dlgDev.dismiss() dlgDev = nil end showAboutHubDialog() end }
+  }
+  dlgDev = Dialog(ctx)
+  dlgDev.setContentView(loadlayout(devLayout))
+  setupOverlayWindow(dlgDev)
+  dlgDev.setOnCancelListener(DialogInterface.OnCancelListener{
+    onCancel = function() showAboutHubDialog() end
+  })
+  dlgDev.show()
+end
+
+showContactDialog = function()
+  if dlgContact then dlgContact.dismiss() dlgContact = nil end
+  local contactLayout = {
+    LinearLayout, orientation="vertical", padding="16dp",
+    {TextView, text="Contact Us / Social Media", textSize="20sp", gravity="center", paddingBottom="12dp"},
+    { Button, text="WhatsApp", onClick=function() openUrl("https://wa.me/923022308883") end },
+    { Button, text="YouTube", onClick=function() openUrl("https://youtube.com/@worldcricket-n1c?si=IvjU-Zv_mhY7V3EX") end },
+    { Button, text="Facebook", onClick=function() openUrl("https://www.facebook.com/share/1JvVkTcCwQ/") end },
+    { Button, text="TikTok", onClick=function() openUrl("https://www.tiktok.com/@world_cricket078") end },
+    { Button, text="Instagram", onClick=function() openUrl("https://www.instagram.com/syedmurtazagilani078") end },
+    { Button, text="Back", onClick=function() if dlgContact then dlgContact.dismiss() dlgContact = nil end showAboutHubDialog() end }
+  }
+  dlgContact = Dialog(ctx)
+  dlgContact.setContentView(loadlayout(contactLayout))
+  setupOverlayWindow(dlgContact)
+  dlgContact.setOnCancelListener(DialogInterface.OnCancelListener{
+    onCancel = function() showAboutHubDialog() end
+  })
+  dlgContact.show()
+end
+
+showAboutHubDialog = function()
+  dismissAllDialogs()
+  local hubLayout = {
+    LinearLayout, orientation="vertical", padding="16dp",
+    {TextView, text="About & Information Hub", textSize="20sp", gravity="center", paddingBottom="12dp"},
+    { Button, text="About App", onClick=function() showAboutAppDialog() end },
+    { Button, text="About Developer", onClick=function() showAboutDeveloperDialog() end },
+    { Button, text="Contact Us", onClick=function() showContactDialog() end },
+    { Button, text="Back", onClick=function() if dlgHub then dlgHub.dismiss() dlgHub = nil end showMainDialog() end }
+  }
+  dlgHub = Dialog(ctx)
+  dlgHub.setContentView(loadlayout(hubLayout))
+  setupOverlayWindow(dlgHub)
+  dlgHub.setOnCancelListener(DialogInterface.OnCancelListener{
+    onCancel = function() showMainDialog() end
+  })
+  dlgHub.show()
+end
+
+-- Exit Dialog
+showExitConfirmation = function()
+  dismissAllDialogs()
+  local exitLayout = {
+    LinearLayout,
+    orientation="vertical",
+    padding="20dp",
+    gravity="center",
+    {TextView, text="Exit Confirmation", textSize="20sp", paddingBottom="12dp"},
+    {TextView, text="Are you sure you want to exit Password Manager Pro by Syed Murtaza Gilani?", textSize="16sp", paddingBottom="16dp"},
+    {
+      LinearLayout,
+      orientation="horizontal",
+      gravity="center",
+      {
+        Button, text="Yes",
+        onClick=function() 
+          if dlgExit then dlgExit.dismiss() dlgExit = nil end 
+          exitApp() 
+        end
+      },
+      {
+        Button, text="No / Back",
+        onClick=function() 
+          if dlgExit then dlgExit.dismiss() dlgExit = nil end 
+          showMainDialog() 
+        end
+      }
+    }
+  }
+  dlgExit = Dialog(ctx)
+  dlgExit.setContentView(loadlayout(exitLayout))
+  setupOverlayWindow(dlgExit)
+  dlgExit.setOnCancelListener(DialogInterface.OnCancelListener{
+    onCancel = function() showMainDialog() end
+  })
+  dlgExit.show()
+end
+
+-- Main Application Window
+showMainDialog = function()
+  dismissAllDialogs()
+
+  local idsMain = {}
+  local mainLayout = {
+    ScrollView,
+    layout_width="fill",
+    layout_height="wrap",
+    {
+      LinearLayout, orientation="vertical", padding="10dp", gravity="center",
+      {TextView, text="Password Manager Pro", textSize="22sp", textColor=0xFF1565C0, paddingBottom="6dp"},
+      { Button, text="Add New Credential (e.g. Gmail)", onClick=function() showAddEditPasswordDialog() end },
+      { Button, text="View Stored Credentials", onClick=function() showStoredPasswordsListDialog() end },
+      { Button, text="Search Stored Credentials", onClick=function() showSearchDialog() end },
+      { Button, text="Secure Password Generator", onClick=function() showPasswordGeneratorDialog() end },
+      { Button, text="Settings & Options", onClick=function() showMoreOptionsDialog() end },
+      { Button, text="About & Help Hub", onClick=function() showAboutHubDialog() end },
+      { Button, text="Exit", onClick=function() showExitConfirmation() end },
+      { TextView, text="Developed by Syed Murtaza Gilani", textSize="11sp", paddingTop="12dp", textColor=0xFF757575 }
+    }
+  }
+
+  local contentView = loadlayout(mainLayout, idsMain)
+
+  dlgMain = Dialog(ctx)
+  dlgMain.setContentView(contentView)
+  setupOverlayWindow(dlgMain)
+  dlgMain.setOnCancelListener(DialogInterface.OnCancelListener{
+    onCancel = function() exitApp() end
+  })
+  dlgMain.show()
+end
+
+-- Start Extension with PIN check if configured
+if appPin and appPin ~= "" then
+  showPinVerificationDialog(function()
+    showMainDialog()
+    checkForUpdates(false)
+  end)
+else
+  showMainDialog()
+  checkForUpdates(false)
+end
