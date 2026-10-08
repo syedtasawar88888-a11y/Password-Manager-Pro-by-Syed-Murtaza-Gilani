@@ -1,0 +1,7 @@
+1.3
+Version Update Highlights:
+• Auto-update now works even when the extension code is encrypted.
+• Fixed TTS (Text-to-Speech) announcement bugs for a smoother screen reader experience.
+• Introduced dual security lock options:
+  - Numeric PIN lock (supports numbers only).
+  - Custom Password lock (supports full QWERTY keyboard characters, letters, and symbols).
